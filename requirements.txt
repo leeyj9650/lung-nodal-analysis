@@ -1,0 +1,15 @@
+numpy
+pandas
+matplotlib
+opencv-python
+scikit-learn
+tqdm
+
+torch
+torchvision
+
+pydicom
+pylidc
+
+jupyter
+ipykernel

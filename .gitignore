@@ -1,0 +1,52 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.pyc
+
+# =========================
+# VSCode
+# =========================
+.vscode/
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Conda / venv
+# =========================
+env/
+venv/
+.venv/
+
+# =========================
+# Raw LIDC Data
+# =========================
+data/raw/lidc-idri/
+
+# =========================
+# Processed Data
+# =========================
+data/processed/
+
+# =========================
+# Outputs
+# =========================
+outputs/
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# PyCharm
+#   JetBrains specific template is maintained in a separate JetBrains.gitignore that can
+#   be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+#   and can be added to the global gitignore or merged into this file.  For a more nuclear
+#   option (not recommended) you can uncomment the following to ignore the entire idea folder.
+.idea/
+.venv/
+__pycache__/
