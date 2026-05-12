@@ -15,7 +15,7 @@ LIDC-IDRI 폐 CT 데이터를 이용해 결절의 악성 여부를 분류하는 
 ---
 
 ## 2. 프로젝트 구조
-
+```
 Project2/
 │
 ├── data/                 ← 원본/전처리 데이터 저장
@@ -74,7 +74,7 @@ Project2/
 ├── requirements.txt
 ├── README.md
 └── .gitignore
-
+```
 ## 3.실행순서
 
 conda activate lidc_resnet
