@@ -76,29 +76,38 @@ Project2/
 └── .gitignore
 ```
 ## 3.실행순서
-
+```
 conda activate lidc_resnet
 
 cd ~/projects/Project2
-
+```
 # preprocess
+```
 python -m src.preprocessing.preprocess
+```
 
 # train
+```
 python -m src.training.train --method a
 python -m src.training.train --method c
-
+```
 # evaluation
+```
 python -m src.evaluation.evaluate --method a
 python -m src.evaluation.evaluate --method c
 .
+```
+
 # gradcam
+```
 python -m src.explainability.gradcam --method a --num_images 5
 python -m src.explainability.gradcam --method c --num_images 5
+```
 
 ## 4. 변수 설명
+```
 1. val loss : 검증 데이터에서의 error
-     └ 모델 generaliztion 성능 확인
+	 └ 모델 generaliztion 성능 확인
 
     핵심 포인트
     | train loss ↓, val loss ↓  | 정상 |
@@ -149,3 +158,4 @@ python -m src.explainability.gradcam --method c --num_images 5
     곡선	    의미
     좌상단      붙음 좋음(TPR 높고 FPR 낮음)
     대각선	    랜덤
+```
