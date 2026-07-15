@@ -55,6 +55,7 @@ python -m src.training.train_lidc_2d_npy_weight  --dynamic_crop --crop_size 64 -
 #정적 crop 
 python -m src.preprocessing.make_npy --crop_size 64 --image_size 128
 python -m src.training.train_lidc_2d_npy_weight --crop_size 64 --image_size 128
-```
+
 python -m src.preprocessing.make_npy --crop_size 64 --image_size 64
 python -m src.training.train_lidc_2d_npy_weight --crop_size 64 --image_size 64
+```
