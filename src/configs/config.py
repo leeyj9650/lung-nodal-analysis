@@ -1,216 +1,101 @@
-# 프로젝트 전체 설정 관리 파일
-# 데이터 경로, batch size, learning rate, image size, output 경로 관리
+# src/configs/config.py
 
 from pathlib import Path
 
+# ── PROJECT_ROOT 확정 ────────────────────────────────────────
+# 현재 파일: PROJECT_ROOT/src/configs/config.py
+# parents[0] = src/configs / parents[1] = src / parents[2] = PROJECT_ROOT
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-# =========================================================
-# 프로젝트 최상위 루트 경로
-# =========================================================
-# 현재 파일 위치:
-# src/configs/config.py
+# ── 서버 원본 경로 (읽기 전용) ──────────────────────────────
+SERVER_ROOT = Path("/home/kjh/lidc_project/data/lidc-idri")
+SERVER_DICOM_ROOT = SERVER_ROOT / "manifest-1600709154662"
+SERVER_XML_DIR = SERVER_ROOT / "LIDC-XML-only" / "tcia-lidc-xml"
+SERVER_METADATA_CSV = SERVER_DICOM_ROOT / "metadata.csv"
+
+# ── 개인 작업 폴더 ───────────────────────────────────────────
+RAW_ROOT = PROJECT_ROOT / "data" / "raw"
+PROCESSED_ROOT = PROJECT_ROOT / "data" / "processed"
+OUTPUT_ROOT = PROJECT_ROOT / "outputs"
+
+# ── 로컬 원본 경로 (복사본) ──────────────────────────────────
+LOCAL_XML_DIR = RAW_ROOT / "xml"
+LOCAL_METADATA_CSV = RAW_ROOT / "metadata" / "metadata.csv"
+
+# ── 실제 사용 경로 (서버 원본 우선) ─────────────────────────
+XML_DIR = SERVER_XML_DIR if SERVER_XML_DIR.exists() else LOCAL_XML_DIR
+METADATA_CSV = SERVER_METADATA_CSV if SERVER_METADATA_CSV.exists() else LOCAL_METADATA_CSV
+
+# ── 전처리 결과물 경로 ───────────────────────────────────────
+JSON_PATH = PROCESSED_ROOT / "nodule_info.json"
+NIFTI_SAVE_DIR = PROCESSED_ROOT / "nifti"
+NPY_CACHE_DIR = PROCESSED_ROOT / "npy_cache"
+SPLIT_JSON = PROCESSED_ROOT / "split.json"
+
+# ── Patch 저장 경로 (crop size / n_slices 조합별 디렉토리) ───
+# 구조 예시:
+#   data/processed/patches_2d/64x64/    ← 2D, crop=64
+#   data/processed/patches_2d/96x96/    ← 2D, crop=96
+#   data/processed/patches_25d/64x64_s1/ ← 2.5D, crop=64, n_slices=1
+#   data/processed/patches_25d/64x64_s2/ ← 2.5D, crop=64, n_slices=2
 #
-# parent         -> configs/
-# parent.parent  -> src/
-# parent.parent.parent -> Project2/
-#
-# 즉 Project2 루트를 자동으로 찾음
-# =========================================================
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+# 디렉토리 이름에 설정을 포함하는 이유:
+#   crop_size나 n_slices를 바꿀 때 기존 데이터를 덮어쓰지 않음.
+#   실험 설정과 데이터가 1:1 대응되어 재현성 보장.
+PATCHES_2D_ROOT = PROCESSED_ROOT / "patches_2d"
+PATCHES_25D_ROOT = PROCESSED_ROOT / "patches_25d"
 
 
-# =========================================================
-# Data Directory
-# =========================================================
-# 원본 데이터 / 전처리 데이터 저장 위치
-# =========================================================
-DATA_DIR = PROJECT_ROOT / "data"
+def get_patch_dir(crop_size: int, n_slices: int = 0) -> Path:
+    """
+    crop_size와 n_slices로 patch 디렉토리 경로 반환.
 
-# 원본 LIDC 데이터
-RAW_DATA_DIR = DATA_DIR / "raw" / "lidc-idri"
+    Args:
+        crop_size: 크롭 크기 (예: 64 → '64x64')
+        n_slices:  0이면 2D, 1 이상이면 2.5D
 
-# 전처리 결과 저장 폴더
-PROCESSED_DIR = DATA_DIR / "processed"
-
-
-# =========================================================
-# Method A Dataset
-# =========================================================
-# Method A:
-# 1,2 -> benign
-# 4,5 -> malignant
-# 3 제외
-# =========================================================
-METHOD_A_DIR = PROCESSED_DIR / "method_a"
-
-# npy 저장 위치
-METHOD_A_IMAGE_DIR = METHOD_A_DIR / "npy"
-
-# labels.csv 위치
-METHOD_A_LABELS = METHOD_A_DIR / "labels.csv"
+    Returns:
+        해당 설정의 patch 저장 디렉토리 Path
+    """
+    if n_slices == 0:
+        return PATCHES_2D_ROOT / f"{crop_size}x{crop_size}"
+    else:
+        return PATCHES_25D_ROOT / f"{crop_size}x{crop_size}_s{n_slices}"
 
 
-# =========================================================
-# Method C Dataset
-# =========================================================
-# Method C:
-# 1 -> benign
-# 5 -> malignant
-# 2,3,4 제외
-# =========================================================
-METHOD_C_DIR = PROCESSED_DIR / "method_c"
+# ── 출력 경로 ───────────────────────────────────────────────
+CKPT_DIR = OUTPUT_ROOT / "checkpoints"
+LOG_DIR = OUTPUT_ROOT / "logs"
+FIGURE_DIR = OUTPUT_ROOT / "figures"
+GRADCAM_DIR = OUTPUT_ROOT / "gradcam"
+PRED_DIR = OUTPUT_ROOT / "predictions"
 
-# npy 저장 위치
-METHOD_C_IMAGE_DIR = METHOD_C_DIR / "npy"
+# ── 전처리 결과 CSV / JSON 경로 ─────────────────────────────
+LABELS_CSV = PROCESSED_ROOT / "labels.csv"
+SPLIT_JSON = PROCESSED_ROOT / "split.json"
 
-# labels.csv 위치
-METHOD_C_LABELS = METHOD_C_DIR / "labels.csv"
-
-
-# =========================================================
-# Output Directory
-# =========================================================
-# 학습 결과 저장 위치
-# =========================================================
-OUTPUT_DIR = PROJECT_ROOT / "outputs"
-
-# 학습된 모델(.pth)
-CHECKPOINT_DIR = OUTPUT_DIR / "checkpoints"
-
-# 학습 로그(json)
-LOG_DIR = OUTPUT_DIR / "logs"
-
-# ROC curve, confusion matrix 등
-FIGURE_DIR = OUTPUT_DIR / "figures"
-
-# Grad-CAM 이미지 저장
-GRADCAM_DIR = OUTPUT_DIR / "gradcam"
-
-# 예측 결과 저장(csv)
-PREDICTION_DIR = OUTPUT_DIR / "predictions"
-
-
-# =========================================================
-# Image Settings
-# =========================================================
-
-# 최종 입력 이미지 크기
-IMAGE_SIZE = 224
-
-# Center Crop 크기
-CROP_SIZE = 128
-
-# CT HU Window 설정
-WINDOW_CENTER = -600
-WINDOW_WIDTH = 1500
-
-# HU clipping 범위
-HU_MIN = -1000
-HU_MAX = 400
-
-
-# =========================================================
-# Training Settings
-# =========================================================
-
-# Batch Size
-BATCH_SIZE = 16
-
-# Epoch 수
-NUM_EPOCHS = 30
-
-# Learning Rate
-LEARNING_RATE = 1e-4
-
-# Weight Decay (L2 Regularization)
-WEIGHT_DECAY = 1e-5
-
-# DataLoader Worker 수
-NUM_WORKERS = 4
-
-# Random Seed
-RANDOM_SEED = 42
-
-
-# =========================================================
-# Model Settings
-# =========================================================
-
-# 사용할 모델 이름
-MODEL_NAME = "resnet50"
-
-# ImageNet pretrained 사용 여부
-PRETRAINED = True
-
-
-# =========================================================
-# Class Names
-# =========================================================
-CLASS_NAMES = {
-    0: "benign",
-    1: "malignant"
-}
-
-
-# =========================================================
-# 자동 폴더 생성
-# =========================================================
-# 프로젝트 실행 시 필요한 폴더 자동 생성
-# =========================================================
-for path in [
-
-    # Method A
-    METHOD_A_IMAGE_DIR,
-
-    # Method C
-    METHOD_C_IMAGE_DIR,
-
-    # Outputs
-    CHECKPOINT_DIR,
+# ── 디렉토리 자동 생성 ───────────────────────────────────────
+DIRS_TO_CREATE = [
+    RAW_ROOT,
+    PROCESSED_ROOT,
+    OUTPUT_ROOT,
+    NIFTI_SAVE_DIR,
+    CKPT_DIR,
     LOG_DIR,
     FIGURE_DIR,
     GRADCAM_DIR,
-    PREDICTION_DIR
+    PRED_DIR,
+]
+for path in DIRS_TO_CREATE:
+    path.mkdir(parents=True, exist_ok=True)
 
-]:
-    path.mkdir(
-        parents=True,
-        exist_ok=True
-    )
+# ── 전처리 파라미터 ──────────────────────────────────────────
+NODULE_XY_THR = 5.0  # 같은 결절로 판단할 x,y 거리 임계값 (pixel)
+NODULE_Z_THR = 8.0  # 같은 결절로 판단할 z 거리 임계값 (mm)
+MIN_POLY_PTS = 3  # 유효 polygon 최소 꼭짓점 수
 
-# =========================================================
-# 실행 테스트 → 터미널에서 python -m src.configs.config
-# =========================================================
-if __name__ == "__main__":
-
-    print("===== CONFIG TEST =====")
-
-    print()
-
-    print("PROJECT_ROOT:")
-    print(PROJECT_ROOT)
-
-    print()
-
-    print("RAW_DATA_DIR:")
-    print(RAW_DATA_DIR)
-
-    print()
-
-    print("METHOD_A_LABELS:")
-    print(METHOD_A_LABELS)
-
-    print()
-
-    print("CHECKPOINT_DIR:")
-    print(CHECKPOINT_DIR)
-
-    print()
-
-    print("IMAGE_SIZE:", IMAGE_SIZE)
-
-    print("BATCH_SIZE:", BATCH_SIZE)
-
-    print()
-
-    print("Config Load Success")
+# ── 학습 기본값 ──────────────────────────────────────────────
+SEED = 42
+BATCH_SIZE = 32
+NUM_WORKERS = 4
+NUM_CLASSES = 2

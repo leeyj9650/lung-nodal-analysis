@@ -50,3 +50,30 @@ Thumbs.db
 .idea/
 .venv/
 __pycache__/
+
+venv/
+node_modules/
+data/
+
+
+
+# =========================
+# Medical Data Backup (추가)
+# =========================
+data/backup_lyj/
+data/raw/
+
+# =========================
+# Log Files (추가)
+# =========================
+*.log
+preprocessing.log
+
+# =========================
+# Outputs Tuning (선택적 추가)
+# =========================
+# 만약 outputs 내부의 png 이미지나 그래프(figures)는 깃허브에 올리고 싶다면,
+# outputs/ 를 지우고 아래처럼 세부 지정하는 것이 좋습니다.
+# outputs/checkpoints/
+# outputs/experiments/
+# outputs/logs/
