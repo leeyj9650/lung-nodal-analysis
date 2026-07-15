@@ -1,6 +1,7 @@
 ## 실행 순서
 
 ### 전처리
+```
 parse lidc annotations.py   ← XML 파싱 (XML annotation을 읽어서 결절 정보를 만든다.)
     └ 실행방법 : python -m src.preprocessing.parse_lidc_annotations
     └ 실행시 data/processed/nudule_info.json
@@ -15,9 +16,10 @@ export nifti.py             ← Nifti 변환 + Segmentation mask 생성 + HU
     └ 실행시 data/processed/nifti
             data/processed/coord_violations.json   
             data/processed/seg_empty_subjects.json 
-
+```
 
 ### 학습
+```
 src/preprocessing/labels.py                  ← 라벨생성
     └ 실행방법 : python -m src.preprocessing.labels
     └ 실행시 data/processed/labels.csv                                     
@@ -39,8 +41,10 @@ src/preprocessing.make_npy.py   ※ npy 새로 만들시 rm -rf data/processed/n
 
 rm -rf outputs/predictions/*
 rm -rf outputs/logs/*
+```
 
 #동적 crop
+```
 python -m src.preprocessing.make_npy --dynamic_crop --crop_size 64 --image_size 128
 python -m src.training.train_lidc_2d_npy_weight  --dynamic_crop --crop_size 64 --image_size 128
 
@@ -51,6 +55,6 @@ python -m src.training.train_lidc_2d_npy_weight  --dynamic_crop --crop_size 64 -
 #정적 crop 
 python -m src.preprocessing.make_npy --crop_size 64 --image_size 128
 python -m src.training.train_lidc_2d_npy_weight --crop_size 64 --image_size 128
-
+```
 python -m src.preprocessing.make_npy --crop_size 64 --image_size 64
 python -m src.training.train_lidc_2d_npy_weight --crop_size 64 --image_size 64
