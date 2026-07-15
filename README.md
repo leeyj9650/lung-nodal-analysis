@@ -43,7 +43,7 @@ rm -rf outputs/predictions/*
 rm -rf outputs/logs/*
 ```
 
-#동적 crop
+## 동적 crop
 ```
 python -m src.preprocessing.make_npy --dynamic_crop --crop_size 64 --image_size 128
 python -m src.training.train_lidc_2d_npy_weight  --dynamic_crop --crop_size 64 --image_size 128
